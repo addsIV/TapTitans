@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Taptitan", "Taptitan\Taptitan.csproj", "{263DC44D-0138-4D2F-BE2C-49A412AECCA1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{263DC44D-0138-4D2F-BE2C-49A412AECCA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{263DC44D-0138-4D2F-BE2C-49A412AECCA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{263DC44D-0138-4D2F-BE2C-49A412AECCA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{263DC44D-0138-4D2F-BE2C-49A412AECCA1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <span> @ViewBag.Health </span>
+    <h1 class="display-4">怪</h1>
+   
+</div>
+
+<div class="text-center attackZone">
+    @using (Html.BeginForm("AttackOnTitan", "Home", FormMethod.Post))
+    {
+        <button type="submit">Attack!</button>
+    }
+</div>
