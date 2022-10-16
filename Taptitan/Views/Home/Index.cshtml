@@ -3,14 +3,27 @@
 }
 
 <div class="text-center">
-    <span> @ViewBag.Health </span>
-    <h1 class="display-4">怪</h1>
-   
+    <span> @ViewBag.TitanHealth </span>
+    <h1 class="display-4"> @ViewBag.TitanName</h1>
 </div>
 
 <div class="text-center attackZone">
-    @using (Html.BeginForm("AttackOnTitan", "Home", FormMethod.Post))
+    @if (ViewBag.MagicPointNotEnoughMessage != null)
     {
+        <script type="text/javascript">
+        alert('@ViewBag.MagicPointNotEnoughMessage');
+        </script>
+    }
+    @using (Html.BeginForm("Attack", "Home", FormMethod.Post))
+    {
+        <span> 攻擊力: </span>
+        <input type="number" name="AttackPoint" value="1" disabled="disabled">
+        <br>
+        <span> 魔力: </span>
+        <input type="number" name="magicPoint" value="@ViewBag.MagicPoint" disabled="disabled">
+        <br>
         <button type="submit">Attack!</button>
+        <br>
+        <button type = "submit"  formaction="@Url.Action("FireBall")" formmethod="post">Fire ball!</button>
     }
 </div>

@@ -1,7 +1,11 @@
+using Taptitan.Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<ITitanService, TitanService>();
+builder.Services.AddSingleton<IPlayerService, PlayerService>();
 
 var app = builder.Build();
 
