@@ -1,29 +1,47 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-
+@model AttackDto
 <div class="text-center">
-    <span> @ViewBag.TitanHealth </span>
     <h1 class="display-4"> @ViewBag.TitanName</h1>
+    <h2> @ViewBag.TitanHealth </h2>
+    <h3 class="display-4"> @ViewBag.TitanElement</h3>
 </div>
 
 <div class="text-center attackZone">
-    @if (ViewBag.MagicPointNotEnoughMessage != null)
+    @if (ViewBag.AlertMessage != null)
     {
         <script type="text/javascript">
-        alert('@ViewBag.MagicPointNotEnoughMessage');
+        alert('@ViewBag.AlertMessage');
         </script>
     }
     @using (Html.BeginForm("Attack", "Home", FormMethod.Post))
     {
         <span> 攻擊力: </span>
-        <input type="number" name="AttackPoint" value="1" disabled="disabled">
+        @Html.TextBoxFor(m => m.AttackPoint, new { @readonly = "readonly"} )
         <br>
         <span> 魔力: </span>
-        <input type="number" name="magicPoint" value="@ViewBag.MagicPoint" disabled="disabled">
+        <input asp-for="MagicPoint" value="@ViewBag.MagicPoint">
         <br>
-        <button type="submit">Attack!</button>
+        @Html.TextBoxFor(m => m.IsUseMagic, new { @hidden = "hidden"})
+        @Html.TextBoxFor(m => m.Element, new { @hidden = "hidden"})
         <br>
-        <button type = "submit"  formaction="@Url.Action("FireBall")" formmethod="post">Fire ball!</button>
+        <button type="submit" >Normal Attack!</button>
+        <button type = "submit"  formaction="@Url.Action("FireBall")" formmethod="post">Fire ball!</button> 
+        <button type = "submit"  formaction="@Url.Action("WaterSplash")" formmethod="post">Water Splash!</button> 
+        <button type = "submit"  formaction="@Url.Action("ForestVine")" formmethod="post">Forest Vine!</button> 
+        <br>
     }
+</div>
+
+<div class="log">
+    <span>@ViewBag.Log1</span>
+    <br>
+    <span>@ViewBag.Log2</span>
+    <br>
+    <span>@ViewBag.Log3</span>
+    <br>
+    <span>@ViewBag.Log4</span>
+    <br>
+    <span>@ViewBag.Log5</span>
 </div>
