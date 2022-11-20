@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<ITitanService, TitanService>();
-builder.Services.AddSingleton<IPlayerService, PlayerService>();
+builder.Services.AddSingleton<IHeroService, HeroService>();
 
 var app = builder.Build();
 

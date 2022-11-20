@@ -4,8 +4,10 @@ namespace Taptitan.Service;
 
 public class TitanService : ITitanService
 {
-    public TitanService()
+    private readonly IHeroService _heroService;
+    public TitanService(IHeroService heroService)
     {
+        _heroService = heroService;
         CurrentMaxHealth = 5;
         CurrentHealth = 5;
         CurrentName = GetNewName();
@@ -19,17 +21,17 @@ public class TitanService : ITitanService
     }
 
     public List<string> Log { get; set; } = new List<string>();
-    public int CurrentMaxHealth { get; set; }
+    private int CurrentMaxHealth { get; set; }
 
-    public int CurrentHealth { get; set; }
+    private int CurrentHealth { get; set; }
 
-    public string CurrentName { get; set; }
-    
-    public Element Element{ get; set; }
+    private string CurrentName { get; set; }
 
-    public int GetNewHealth()
+    private Element Element{ get; set; }
+
+    private void MakeNewHealthDouble()
     {
-        return CurrentMaxHealth * 2;
+        CurrentMaxHealth *= 2;
     }
 
     public  int GetCurrentHealth()
@@ -51,7 +53,7 @@ public class TitanService : ITitanService
     {
         if (IsTitanWillDie(attackDto.AttackPoint))
         {
-            GetNewTitan();
+            MakeNewTitan();
         }
         else
         {
@@ -61,42 +63,41 @@ public class TitanService : ITitanService
         Log.Add($"Normal Attack, damage: {attackDto.AttackPoint}");
         return attackDto;
     }
-
+    
     private AttackDto GetSkillAttacked(AttackDto attackDto)
     {
-        if (attackDto.MagicPoint < 3)
+        var attackResult = _heroService.GetMagicAttackResult(attackDto);
+        if (!attackResult.IsSuccess)
         {
-            Log.Add($"Use Magic, element: {attackDto.Element}, but magic point not enough!");
-            attackDto.IsFail = true;
+            Log.Add(attackResult.Reason);
             return attackDto;
         }
-
-        attackDto.MagicPoint -= 3;
-        var attackPoint = attackDto.AttackPoint * 3;
-        attackPoint = IsElementCounter(attackDto.Element) ? attackPoint * 2 : attackPoint;
         
-        if (IsTitanWillDie(attackPoint))
+        if (IsTitanWillDie(attackResult.attackPoint))
         {
-            GetNewTitan();
+            MakeNewTitan();
         }
         else
         {
-            CurrentHealth -= attackPoint ; 
+            CurrentHealth -= attackResult.attackPoint; 
         }
 
-        Log.Add($"Use Magic, element: {attackDto.Element}, damage: {attackPoint}");
+        Log.Add($"Use Magic, element: {attackDto.Element}, damage: {attackResult.attackPoint}");
         return attackDto;
     }
 
-    private bool IsElementCounter(Element element)
+    public bool IsElementCounter(Element element)
     {
         var dif = element - Element;
         return dif is 1 or -2;
     }
 
-    private void GetNewTitan()
+    private void MakeNewTitan()
     {
-        CurrentHealth = GetNewHealth();
+        _heroService.ExpUp();
+        
+        MakeNewHealthDouble();
+        CurrentHealth = CurrentMaxHealth;
         CurrentName = GetNewName();
         Element = GetNewElement();
     }
