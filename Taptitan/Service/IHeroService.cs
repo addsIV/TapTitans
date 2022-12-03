@@ -10,10 +10,3 @@ public interface IHeroService
     void ExpUp();
     AttackResult GetMagicAttackResult(AttackDto attackDto);
 }
-
-public class AttackResult
-{
-    public bool IsSuccess;
-    public string Reason;
-    public int attackPoint;
-}
