@@ -72,7 +72,8 @@ public class TitanService : ITitanService
             Log.Add(attackResult.Reason);
             return attackDto;
         }
-        
+
+        attackResult.attackPoint = GetElementCounterResult(attackDto.Element, attackResult.attackPoint);
         if (IsTitanWillDie(attackResult.attackPoint))
         {
             MakeNewTitan();
@@ -84,6 +85,13 @@ public class TitanService : ITitanService
 
         Log.Add($"Use Magic, element: {attackDto.Element}, damage: {attackResult.attackPoint}");
         return attackDto;
+    }
+
+    private int GetElementCounterResult(Element element, int attackPoint)
+    {
+        return IsElementCounter(element)
+            ? attackPoint * GetElementCounterConfig().ElementCounterRatio
+            : attackPoint / GetElementCounterConfig().ElementCounteredRatio;
     }
 
     public bool IsElementCounter(Element element)
@@ -117,5 +125,14 @@ public class TitanService : ITitanService
     public AttackDto GetAttacked(AttackDto attackDto)
     {
         return attackDto.IsUseMagic ? GetSkillAttacked(attackDto) : GetNormalAttacked(attackDto);
+    }
+    
+    private static ElementCounterConfig GetElementCounterConfig()
+    {
+        return new ElementCounterConfig()
+        {
+            ElementCounterRatio = 2,
+            ElementCounteredRatio = 2
+        };
     }
 }
