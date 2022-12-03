@@ -5,10 +5,8 @@ namespace Taptitan.Service;
 
 public  class HeroService : IHeroService
 {
-    private ITitanService _titanService;
-    public HeroService(ITitanService titanService)
+    public HeroService()
     {
-        _titanService = titanService;
         Level = 1;
         Exp = 0;
         MaxExp = Level;
@@ -60,9 +58,6 @@ public  class HeroService : IHeroService
         attackDto.MagicPoint -= magicConfig.MagicCost;
         
         var attackPoint = attackDto.AttackPoint * magicConfig.MagicRatio;
-        attackPoint = _titanService.IsElementCounter(attackDto.Element)
-            ? attackPoint * magicConfig.ElementCounterRatio
-            : attackPoint / magicConfig.ElementCounteredRatio;
 
         return new AttackResult
         {
@@ -87,8 +82,6 @@ public  class HeroService : IHeroService
         {
             MagicCost = 1,
             MagicRatio = 4,
-            ElementCounterRatio = 2,
-            ElementCounteredRatio = 2
         };
     }
 }
