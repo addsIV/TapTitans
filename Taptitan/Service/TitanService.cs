@@ -5,9 +5,12 @@ namespace Taptitan.Service;
 public class TitanService : ITitanService
 {
     private readonly IHeroService _heroService;
-    public TitanService(IHeroService heroService)
+
+    private readonly ILog _log;
+    public TitanService(IHeroService heroService, ILog log)
     {
         _heroService = heroService;
+        _log = log;
         CurrentMaxHealth = 5;
         CurrentHealth = 5;
         CurrentName = GetNewName();
@@ -17,10 +20,8 @@ public class TitanService : ITitanService
     private static Element GetNewElement()
     {
         var random = new Random();
-        return (Element)random.Next(1, 3);
+        return (Element)random.Next(1, 4);
     }
-
-    public List<string> Log { get; set; } = new List<string>();
     private int CurrentMaxHealth { get; set; }
 
     private int CurrentHealth { get; set; }
@@ -31,7 +32,7 @@ public class TitanService : ITitanService
 
     private void MakeNewHealthDouble()
     {
-        CurrentMaxHealth *= 2;
+        CurrentMaxHealth += 10;
     }
 
     public  int GetCurrentHealth()
@@ -49,28 +50,36 @@ public class TitanService : ITitanService
         return Element.ToString();
     }
 
-    private AttackDto GetNormalAttacked(AttackDto attackDto)
+    private AttackResult GetNormalAttacked()
     {
-        if (IsTitanWillDie(attackDto.AttackPoint))
+        var attackPoint = _heroService.GetAttackPoint();
+        if (IsTitanWillDie(attackPoint))
         {
             MakeNewTitan();
         }
         else
         {
-            CurrentHealth -= attackDto.AttackPoint; 
+            CurrentHealth -= attackPoint; 
         }
         
-        Log.Add($"Normal Attack, damage: {attackDto.AttackPoint}");
-        return attackDto;
+        _log.InsertLog($"Normal Attack, damage: {attackPoint}");
+        return new AttackResult()
+        {
+            IsSuccess = true,
+        };
     }
     
-    private AttackDto GetSkillAttacked(AttackDto attackDto)
+    private AttackResult GetSkillAttacked(AttackDto attackDto)
     {
         var attackResult = _heroService.GetMagicAttackResult(attackDto);
         if (!attackResult.IsSuccess)
         {
-            Log.Add(attackResult.Reason);
-            return attackDto;
+            _log.InsertLog(attackResult.Reason);
+            return new AttackResult()
+            {
+                IsSuccess = false,
+                Reason = attackResult.Reason,
+            };
         }
 
         attackResult.attackPoint = GetElementCounterResult(attackDto.Element, attackResult.attackPoint);
@@ -83,8 +92,11 @@ public class TitanService : ITitanService
             CurrentHealth -= attackResult.attackPoint; 
         }
 
-        Log.Add($"Use Magic, element: {attackDto.Element}, damage: {attackResult.attackPoint}");
-        return attackDto;
+        _log.InsertLog($"Use Magic, element: {attackDto.Element}, damage: {attackResult.attackPoint}");
+        return new AttackResult()
+        {
+            IsSuccess = true
+        };
     }
 
     private int GetElementCounterResult(Element element, int attackPoint)
@@ -122,9 +134,9 @@ public class TitanService : ITitanService
         return CurrentHealth <= attackPoint;
     }
 
-    public AttackDto GetAttacked(AttackDto attackDto)
+    public AttackResult GetAttacked(AttackDto attackDto)
     {
-        return attackDto.IsUseMagic ? GetSkillAttacked(attackDto) : GetNormalAttacked(attackDto);
+        return attackDto.IsUseMagic ? GetSkillAttacked(attackDto) : GetNormalAttacked();
     }
     
     private static ElementCounterConfig GetElementCounterConfig()

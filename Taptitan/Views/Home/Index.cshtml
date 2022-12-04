@@ -3,55 +3,116 @@
 }
 @model AttackDto
 <div class="text-center">
-    <h1 class="display-4"> @ViewBag.TitanName</h1>
-    <h2> @ViewBag.TitanHealth </h2>
-    <h3 class="display-4"> @ViewBag.TitanElement</h3>
+    <h1 class="display-4" id="TitanName"> @ViewBag.TitanName</h1>
+    <h2 id="TitanHealth"> @ViewBag.TitanHealth </h2>
+    <h3 class="display-4" id="TitanElement"> @ViewBag.TitanElement</h3>
 </div>
 
 
 <div class="text-center levelZone">
-    <span> 等級: @ViewBag.Level</span>
+    <span> 等級: <span id="Level">@ViewBag.Level</span></span>
     <br>
-    <span> 經驗值: @ViewBag.Exp / @ViewBag.MaxExp</span>
+    <span> 經驗值: <span id="Exp">@ViewBag.Exp</span> / <span id="MaxExp">@ViewBag.MaxExp</span></span>
 </div>
 <div class="text-center attackZone">
-    @if (ViewBag.AlertMessage != null)
-    {
-        <script type="text/javascript">
-        alert('@ViewBag.AlertMessage');
-        </script>
-    }
-    @using (Html.BeginForm("Attack", "Home", FormMethod.Post))
-    {
-        <span> 攻擊力: </span>
-        @Html.TextBoxFor(m => m.AttackPoint, new { @readonly = "readonly" })
-        <br>
-        <span> 魔力: </span>
-        <input asp-for="MagicPoint" value="@ViewBag.MagicPoint">
-        <br>
-        @Html.TextBoxFor(m => m.IsUseMagic, new { @hidden = "hidden" })
-        @Html.TextBoxFor(m => m.Element, new { @hidden = "hidden" })
-        <br>
-        <button type="submit">Normal Attack!</button>
-        <button type="submit" formaction="@Url.Action("FireBall")" formmethod="post">Fire ball!</button>
-        <button type="submit" formaction="@Url.Action("WaterSplash")" formmethod="post">Water Splash!</button>
-        <button type="submit" formaction="@Url.Action("ForestVine")" formmethod="post">Forest Vine!</button>
-        <br>
-    }
+    <span>攻擊力: <span id="AttackPoint">@ViewBag.AttackPoint</span></span>
+    <span>魔力: <span id="MagicPoint">@ViewBag.MagicPoint</span></span>
+    <button onclick="NormalAttack()">Normal Attack!</button>
+    <button onclick="MagicAttack('fire')">Fire ball!</button>
+    <button onclick="MagicAttack('water')">Water Splash!</button>
+    <button onclick="MagicAttack('forest')">Forest Vine!</button>
 </div>
 
-<div class="log">
-    <span>@ViewBag.Log1</span>
-    <br>
-    <span>@ViewBag.Log2</span>
-    <br>
-    <span>@ViewBag.Log3</span>
-    <br>
-    <span>@ViewBag.Log4</span>
-    <br>
-    <span>@ViewBag.Log5</span>
-</div>
+<span id="log">
+   
+</span>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 <script >
+// app.use(require("body-parser").json());
+    const elements = {
+        "forest": 1,
+        "fire": 2,
+        "water": 3,
+    };
+    
+    function GetTitanStatus() {
+         $.ajax({
+            url:"/Home/GetTitanStatus/",
+            method:"get",
+            success: function(response){
+                document.getElementById("TitanName").innerText = response.name;
+                document.getElementById("TitanHealth").innerText = response.health;
+                document.getElementById("TitanElement").innerText = response.element;                      
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
+             }
+         })
+    }
+    function GetHeroStatus() {
+         $.ajax({
+            url:"/Home/GetHeroStatus/",
+            method:"get",
+            success: function(response){
+                document.getElementById("Level").innerText = response.level;
+                document.getElementById("Exp").innerText = response.exp;
+                document.getElementById("MaxExp").innerText = response.maxExp;                      
+                document.getElementById("AttackPoint").innerText = response.attackPoint;                      
+                document.getElementById("MagicPoint").innerText = response.magicPoint;  
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
+             }
+         })
+    }
+    function GetLog() {
+         $.ajax({
+            url:"/Home/GetLog/",
+            method:"get",
+            success: function(response){
+                document.getElementById("log").innerHTML = '';
+                for (let i = 0;i < response.length;i++){
+                    document.getElementById("log").innerHTML += '<span>'+ response[i] + '</span><br>';              
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
+             }
+         })
+    }
+    function PostAttack(body){
+         $.ajax({
+            url:"/Home/Attack/",
+            method:"post",
+            data:body,
+            success: function(response){
+                GetTitanStatus();
+                GetHeroStatus();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
+             },
+             complete: function (){
+                GetLog();
+             }
+          })
+        } 
+        
+    function NormalAttack() {
+        let body = {
+            "IsUseMagic": false,
+        };
 
+         PostAttack(body);
+        }
+        
+    function MagicAttack(element){
+         let body = {
+                    "IsUseMagic": true,
+                    "Element": elements[element]
+                };
+         
+        PostAttack(body);
+        }
 </script>

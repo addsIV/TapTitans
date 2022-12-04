@@ -4,9 +4,11 @@ namespace Taptitan.Service;
 
 public interface IHeroService
 {
-    int GetCurrentLevel();
-    int GetCurrentExp();
-    int GetCurrentMaxExp();
+    int GetLevel();
+    int GetExp();
+    int GetMaxExp();
     void ExpUp();
     AttackResult GetMagicAttackResult(AttackDto attackDto);
+    int GetMagicPoint();
+    int GetAttackPoint();
 }

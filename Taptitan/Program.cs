@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<ITitanService, TitanService>();
 builder.Services.AddSingleton<IHeroService, HeroService>();
+builder.Services.AddSingleton<ILog, Log>();
 
 var app = builder.Build();
 
